@@ -5,6 +5,7 @@ import * as cookieParser from "cookie-parser";
 import * as session from "express-session";
 import { config } from "./config/Config";
 import { routes } from "./routes/Routes";
+import * as bodyParser from "body-parser";
 
 export class WeaklibBackend {
   public express: Express;
@@ -15,6 +16,7 @@ export class WeaklibBackend {
     this.express.use(passport.initialize());
     this.express.use(passport.session());
     this.express.use(session(config.session.init));
+    this.express.use(bodyParser.json());
     this.mountRoutes();
   }
 

@@ -1,4 +1,4 @@
-import { Db, MongoError} from "mongodb";
+import { Db, MongoError } from "mongodb";
 import { DatabaseRequest } from "../DatabaseRequest";
 
 export class FindOne extends DatabaseRequest {
@@ -7,7 +7,7 @@ export class FindOne extends DatabaseRequest {
     private query: object;
     private selectors: object;
 
-    constructor(collection: string, query: object, selectors: object, callback: (result: any) => void) {
+    constructor(collection: string, query: object, selectors: object, callback: (result: any, error?: MongoError) => void) {
         super(callback);
         this.collection = collection;
         this.query = query;

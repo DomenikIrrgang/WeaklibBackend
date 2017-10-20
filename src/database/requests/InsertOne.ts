@@ -6,7 +6,7 @@ export class InsertOne extends DatabaseRequest {
     private collection: string;
     private object: object;
 
-    constructor(collection: string, object: object, callback?: (result: any) => void) {
+    constructor(collection: string, object: object, callback?: (result: any, error?: MongoError) => void) {
         super(callback);
         this.collection = collection;
         this.object = object;

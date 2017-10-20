@@ -1,1 +1,1 @@
-export let developmentEnvironment: boolean = true;
+export const developmentEnvironment: boolean = true;

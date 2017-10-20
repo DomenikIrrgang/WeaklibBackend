@@ -1,7 +1,7 @@
 // import { Document, Schema, Model, model, NativeError } from "mongoose";
 
 export class User {
-    public username: string;
+    public name: string;
     public password: string;
     public email: string;
     public profilePicture: string;

@@ -6,7 +6,7 @@ export class Authenticated implements Middleware {
         if (request.session.user) {
             return true;
         }
-        response.send(401);
+        response.sendStatus(401);
         return false;
     }
 }
