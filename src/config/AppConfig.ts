@@ -6,6 +6,9 @@ import { developmentEnvironment } from "./Globals";
 export class AppConfig {
     public logger: Logger = new ConsoleLogger(true);
     public port: number = 8080;
+    public originWhitelist: string[] = [
+        "http://localhost:4200",
+    ];
 }
 
 export let appConfig: AppConfig = new AppConfig();

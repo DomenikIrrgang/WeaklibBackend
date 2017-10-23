@@ -14,6 +14,10 @@ export class SessionConfig {
             collection: "sessions",
         }),
         saveUninitialized: true,
+        cookie: {
+            secure: false,
+            httpOnly: false,
+        },
     };
 }
 

@@ -5,7 +5,7 @@ export class CreateCollection extends DatabaseRequest {
 
   private collection: string;
 
-  constructor(collection: string, callback: (result: any) => void) {
+  constructor(collection: string, callback?: (result: any, error: MongoError) => void) {
     super(callback);
     this.collection = collection;
   }

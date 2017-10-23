@@ -1,4 +1,5 @@
 import { WeakauraVersion } from "./WeakauraVersion";
+import { WeakauraPicture } from "./WeakauraPicture";
 
 export class Weakaura {
     public name: string;
@@ -9,4 +10,5 @@ export class Weakaura {
     public userId: any;
     public categories: string[];
     public versions: WeakauraVersion[];
+    public images: WeakauraPicture[];
 }

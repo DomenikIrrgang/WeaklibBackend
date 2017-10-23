@@ -11,7 +11,7 @@ interface LoginRequest {
 
 export class LoginController implements Controller {
     public request(request: Request, response: Response): void {
-        let loginRequest: LoginRequest = request.body;
+        let loginRequest: LoginRequest = request.query;
         if (loginRequest.password && loginRequest.name) {
             const database: DatabaseRequestScheduler = new DatabaseRequestScheduler();
             database.executeSingleRequest(new FindOne("user", { name: loginRequest.name }, {}, (result: User, error) => {
@@ -20,14 +20,14 @@ export class LoginController implements Controller {
                 } else {
                     if (result && result.password === loginRequest.password) {
                         request.session.user = result;
-                        response.sendStatus(200);
+                        response.send("SUCCESS");
                     } else {
-                        response.sendStatus(401);
+                        response.send("ERROR");
                     }
                 }
             }));
         } else {
-            response.sendStatus(401);
+            response.send("ERROR");
         }
     }
 }
