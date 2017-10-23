@@ -9,6 +9,7 @@ import { RegisterController } from "../controller/RegisterController";
 import { IsLoggedInController } from "../controller/IsLoggedInController";
 import { GetWeakauraController } from "../controller/GetWeakauraController";
 import { CategoriesController } from "../controller/CategoriesController";
+import { GetWeakauraCommentController } from "../controller/GetWeakauraCommentController";
 import { UserController } from "../controller/UserController";
 import { AllowCrossOrigin } from "../middleware/AllowCrossOrigin";
 
@@ -24,4 +25,5 @@ export let routes: Route[] = [
     new Route("GET", "/weakaura", new GetWeakauraController()).middleware(crossOrigin),
     new Route("GET", "/categories", new CategoriesController()).middleware(crossOrigin),
     new Route("GET", "/user", new UserController()).middleware(crossOrigin),
+    new Route("GET", "/weakauracomment", new GetWeakauraCommentController()).middleware(crossOrigin),
 ];
