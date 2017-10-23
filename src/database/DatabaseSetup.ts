@@ -8,6 +8,7 @@ import { Weakaura } from "../database/models/Weakaura";
 import { User } from "../database/models/User";
 import { WeakauraCategory } from "../database/models/WeakauraCategory";
 import { WeakauraComment } from "../database/models/WeakauraComment";
+import { ObjectID } from "mongodb";
 
 export class DatabaseSetup {
     public init(): void {
@@ -134,34 +135,13 @@ export class DatabaseSetup {
         database.scheduleRequest(new CreateCollection("weakauracomment", (result: any, error) => {
             if (!error) {
                 let comment: WeakauraComment = {
+                    root: "59ee6889a0ecc8422c856a34",
+                    comments: [],
+                    _id: new ObjectID(),
                     user: "Suu",
                     text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
                     hash: "123xfaijkae",
                     created: Date.now(),
-                    comments: [
-                        {
-                            user: "Suu",
-                            text: "YES I AM!",
-                            hash: "123xfaijkae",
-                            created: Date.now(),
-                            comments: [
-                                {
-                                    user: "Suu",
-                                    text: "YES I AM!",
-                                    hash: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-                                    created: Date.now(),
-                                    comments: []
-                                },
-                                {
-                                    user: "Suu",
-                                    text: "YES I AM!",
-                                    hash: "123xfaijkae",
-                                    created: Date.now(),
-                                    comments: []
-                                }
-                            ]
-                        }
-                    ]
                 };
                 database.scheduleRequest(new InsertOne("weakauracomment", comment));
                 database.executeRequests();
