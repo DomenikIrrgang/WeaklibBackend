@@ -19,6 +19,7 @@ export class LoginController implements Controller {
                     response.sendStatus(401);
                 } else {
                     if (result && result.password === loginRequest.password) {
+                        delete result.password;
                         request.session.user = result;
                         response.send("SUCCESS");
                     } else {

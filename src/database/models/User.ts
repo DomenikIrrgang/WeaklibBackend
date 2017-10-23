@@ -6,6 +6,7 @@ export class User {
     public email: string;
     public profilePicture: string;
     public description: string;
+    public created: number;
 }
 
 /*

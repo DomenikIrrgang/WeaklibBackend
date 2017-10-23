@@ -8,11 +8,13 @@ interface RegisterRequest {
     name: string;
     password: string;
     email: string;
+    created: number;
 }
 
 export class RegisterController implements Controller {
     public request(request: Request, response: Response): void {
         let registerRequest: RegisterRequest = request.body;
+        registerRequest.created = Date.now();
         if (registerRequest.password && registerRequest.name && registerRequest.email) {
             let emailCheck: RegExp = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
             if (emailCheck.test(registerRequest.email)) {

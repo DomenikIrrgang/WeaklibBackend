@@ -7,8 +7,10 @@ export class Weakaura {
     public profilePicture: string;
     public description: string;
     public views: number;
-    public userId: any;
+    public user: string;
     public categories: string[];
     public versions: WeakauraVersion[];
     public images: WeakauraPicture[];
+    public created: number;
+    public updated: number;
 }

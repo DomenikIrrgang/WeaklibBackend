@@ -7,6 +7,9 @@ import { LoginController } from "../controller/LoginController";
 import { LogoutController } from "../controller/LogoutController";
 import { RegisterController } from "../controller/RegisterController";
 import { IsLoggedInController } from "../controller/IsLoggedInController";
+import { GetWeakauraController } from "../controller/GetWeakauraController";
+import { CategoriesController } from "../controller/CategoriesController";
+import { UserController } from "../controller/UserController";
 import { AllowCrossOrigin } from "../middleware/AllowCrossOrigin";
 
 let authenticated: Middleware = new Authenticated();
@@ -18,4 +21,7 @@ export let routes: Route[] = [
     new Route("POST", "/logout", new LogoutController()).middleware(crossOrigin),
     new Route("POST", "/register", new RegisterController()).middleware(crossOrigin),
     new Route("GET", "/isloggedin", new IsLoggedInController()).middleware(crossOrigin),
+    new Route("GET", "/weakaura", new GetWeakauraController()).middleware(crossOrigin),
+    new Route("GET", "/categories", new CategoriesController()).middleware(crossOrigin),
+    new Route("GET", "/user", new UserController()).middleware(crossOrigin),
 ];

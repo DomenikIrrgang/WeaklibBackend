@@ -7,7 +7,7 @@ export class FindAll extends DatabaseRequest {
     private query: object;
     private selectors: object;
 
-    constructor(collection: string, query: object, selectors: object, callback: (result: any) => void) {
+    constructor(collection: string, query: object, selectors: object, callback: (result: any, error?: MongoError) => void) {
         super(callback);
         this.collection = collection;
         this.query = query;

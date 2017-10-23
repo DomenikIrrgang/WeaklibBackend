@@ -6,7 +6,7 @@ export class InsertMany extends DatabaseRequest {
     private collection: string;
     private data: object[];
 
-    constructor(collection: string, data: object[], callback: (result: any) => void) {
+    constructor(collection: string, data: object[], callback?: (result: any, error: MongoError) => void) {
         super(callback);
         this.collection = collection;
         this.data = data;
