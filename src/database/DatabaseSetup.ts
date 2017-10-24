@@ -32,7 +32,7 @@ export class DatabaseSetup {
                     password: "123",
                     profilePicture: "https://media.wago.io/screenshots/BJK1Krrq-/1505216864352-Hoez.png",
                     created: Date.now(),
-                }
+                };
                 database.scheduleRequest(new CreateIndex("user", { email: 1 }, { unique: true }));
                 database.scheduleRequest(new CreateIndex("user", { name: 1 }, { unique: true }));
                 database.scheduleRequest(new InsertOne("user", user));
@@ -53,23 +53,23 @@ export class DatabaseSetup {
                     versions: [
                         {
                             weakauraString: "asdasdadsdas",
-                            version: 1,
-                            changes: "Added some stuff"
-                        }
+                            version: "1",
+                            changes: "Added some stuff",
+                        },
                     ],
                     categories: [
                         "Warrior",
-                        "Druid"
+                        "Druid",
                     ],
                     images: [
                         {
                             url: "https://media.wago.io/screenshots/BJK1Krrq-/1505216864352-Hoez.png",
                             description: "This is a testing description",
-                        }
+                        },
                     ],
                     profilePicture: "https://media.wago.io/screenshots/BJK1Krrq-/1505216864352-Hoez.png",
                     created: Date.now(),
-                    updated: Date.now()
+                    updated: Date.now(),
                 },
                 {
                     name: "Archimonde Radar",
@@ -80,34 +80,34 @@ export class DatabaseSetup {
                     versions: [
                         {
                             weakauraString: "asdasdadsdas",
-                            version: 1,
-                            changes: "Added some stuff"
+                            version: "1",
+                            changes: "Added some stuff",
                         },
                         {
                             weakauraString: "asdasdadsdas",
-                            version: 2,
-                            changes: "Added some stuff"
+                            version: "2",
+                            changes: "Added some stuff",
                         },
                         {
                             weakauraString: "asdasdadsdas",
-                            version: 3,
-                            changes: "Added some stuff"
-                        }
+                            version: "3",
+                            changes: "Added some stuff",
+                        },
                     ],
                     categories: [
                         "Deathknight",
-                        "Druid"
+                        "Druid",
                     ],
                     images: [
                         {
                             url: "https://media.wago.io/screenshots/BJK1Krrq-/1505216864352-Hoez.png",
                             description: "This is a testing description",
-                        }
+                        },
                     ],
                     profilePicture: "https://media.wago.io/screenshots/BJK1Krrq-/1505216864352-Hoez.png",
                     created: Date.now(),
-                    updated: Date.now()
-                }
+                    updated: Date.now(),
+                },
             ];
             database.scheduleRequest(new InsertMany("weakaura", weakaura));
             database.scheduleRequest(new CreateIndex("weakaura", { hash: 1 }, { unique: true }));
@@ -135,13 +135,25 @@ export class DatabaseSetup {
         database.scheduleRequest(new CreateCollection("weakauracomment", (result: any, error) => {
             if (!error) {
                 let comment: WeakauraComment = {
-                    root: "59ee6889a0ecc8422c856a34",
-                    comments: [],
                     _id: new ObjectID(),
+                    version: "",
                     user: "Suu",
+                    // tslint:disable-next-line:max-line-length
                     text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
                     hash: "123xfaijkae",
                     created: Date.now(),
+                    comments: [
+                        {
+                            _id: new ObjectID(),
+                            user: "Suu",
+                            version: "",
+                            // tslint:disable-next-line:max-line-length
+                            text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+                            hash: "123xfaijkae",
+                            created: Date.now(),
+                            comments: [],
+                        },
+                    ],
                 };
                 database.scheduleRequest(new InsertOne("weakauracomment", comment));
                 database.executeRequests();

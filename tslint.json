@@ -16,6 +16,7 @@
         "object-literal-sort-keys": false,
         "prefer-const": false,
         "typedef": true,
+        "no-string-literal": false,
         "class-name": true
     },
     "jsRules": {

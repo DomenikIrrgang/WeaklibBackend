@@ -3,12 +3,12 @@ import { Request, Response } from "express";
 import { DatabaseRequestScheduler } from "../database/DatabaseRequestScheduler";
 import { FindAll } from "../database/requests/FindAll";
 import { FindOne } from "../database/requests/FindOne";
-import { User } from "../database/models/User";
 
 interface Comment {
     text: string;
-    user: User;
+    user: object;
     hash: string;
+    version: string;
     created: number;
     comments: Comment[];
 }
@@ -26,10 +26,12 @@ export class GetWeakauraCommentController implements Controller {
         database.executeRequests();
     }
 
-    private findUser(database:DatabaseRequestScheduler, comments: Comment[]) {
+    private findUser(database: DatabaseRequestScheduler, comments: Comment[]) {
         for (let comment of comments) {
-            database.scheduleRequest(new FindOne("user", { name: comment.user }, {}, (user: User) => {
-                comment.user = user;
+            database.scheduleRequest(new FindOne("user", { name: comment.user }, {}, (user) => {
+                comment.user = {};
+                comment.user["name"] = user.name;
+                comment.user["profilePicture"] = user.profilePicture;
                 this.findUser(database, comment.comments);
             }));
             database.executeRequests();
