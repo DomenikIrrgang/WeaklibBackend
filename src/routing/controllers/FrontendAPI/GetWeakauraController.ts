@@ -1,13 +1,14 @@
-import { Controller } from "./Controller";
+import { Controller } from "../../Controller";
 import { Request, Response } from "express";
-import { DatabaseRequestScheduler } from "../database/DatabaseRequestScheduler";
-import { FindAll } from "../database/requests/FindAll";
-import { Weakaura } from "../database/models/Weakaura";
+import { DatabaseRequestScheduler } from "../../../database/DatabaseRequestScheduler";
+import { FindAll } from "../../../database/requests/FindAll";
+import { Weakaura } from "../../../database/models/Weakaura";
+import { config } from "../../../config/Config";
 
 export class GetWeakauraController implements Controller {
-    public request(request: Request, response: Response): void {
+    public onRequest(request: Request, response: Response): void {
         const database: DatabaseRequestScheduler = new DatabaseRequestScheduler();
-        database.executeSingleRequest(new FindAll("weakaura", this.getQuery(request), {}, (result: Weakaura[], error) => {
+        database.executeSingleRequest(new FindAll(config.database.collections.weakaura, this.getQuery(request), {}, (result: Weakaura[], error) => {
             console.log(result);
             response.send(JSON.stringify(result));
         }));

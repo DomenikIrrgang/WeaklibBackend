@@ -1,7 +1,6 @@
 import { Logger } from "./Logger";
 import { LogLevel } from "./LogLevel";
 import { ConsoleLogger } from "./ConsoleLogger";
-import { developmentEnvironment } from "../config/Globals";
 import * as fileSystem from "fs";
 
 export class FileLogger implements Logger {
@@ -10,6 +9,7 @@ export class FileLogger implements Logger {
     private path: string = "./logs/";
     private backupLogger: Logger = new ConsoleLogger();
     private logDebug: boolean;
+    private logLevel: LogLevel;
 
     constructor(private title: string, private fileName: string, logDebug?: boolean, path?: string) {
         if (path) {
@@ -19,27 +19,39 @@ export class FileLogger implements Logger {
             this.logDebug = logDebug;
             this.backupLogger = new ConsoleLogger(logDebug);
         } else {
-            this.logDebug = developmentEnvironment;
+            this.logDebug = false;
         }
         this.checkFileExists(true);
     }
 
-    public log(logLevel: LogLevel, message: string) {
-        if (this.fileCreated) {
-            this.writeToFile(logLevel, message);
-        } else {
-            this.checkFileExists(false, (exists) => {
-                if (exists) {
-                    this.writeToFile(logLevel, message);
-                }
-            });
+    public log(logLevel: LogLevel, message: string): void {
+        if (this.logLevel <= logLevel) {
+            if (this.fileCreated) {
+                this.writeToFile(logLevel, message);
+            } else {
+                this.checkFileExists(false, (exists) => {
+                    if (exists) {
+                        this.writeToFile(logLevel, message);
+                    }
+                });
+            }
         }
     }
 
-    private writeToFile(logLevel: LogLevel, message: string) {
+    public setLogLevel(loglevel: LogLevel): void {
+        this.logLevel = loglevel;
+    }
+
+    /**
+     * Writes message with loglevel to a file.
+     * 
+     * @param logLevel The loglevel.
+     * @param message The message.
+     */
+    private writeToFile(logLevel: LogLevel, message: string): void {
         if (this.logDebug === true || (this.logDebug === false && logLevel !== LogLevel.DEBUG)) {
             fileSystem.appendFile(this.path + this.fileName,
-                new Date().toLocaleString() + " " + logLevel + ": " + message + "\n",
+                new Date().toLocaleString() + " " + LogLevel.toString(logLevel) + ": " + message + "\n",
                 (error: NodeJS.ErrnoException) => {
                     if (error) {
                         this.backupLogger.log(LogLevel.ERROR, "Could not write to file: " + this.path + this.fileName);
@@ -49,6 +61,12 @@ export class FileLogger implements Logger {
         }
     }
 
+    /**
+     * Checks if a file exists and calls the callback with the result.
+     *
+     * @param create If trues creates the file if it doesnt exsist.
+     * @param callback Callback that is called when the filelookup has been finished.
+     */
     private checkFileExists(create: boolean, callback?: (exists: boolean) => void): void {
         fileSystem.exists(this.path + this.fileName, (exists: boolean) => {
             this.fileCreated = exists;

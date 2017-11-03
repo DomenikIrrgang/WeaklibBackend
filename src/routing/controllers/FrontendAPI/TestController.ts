@@ -1,8 +1,8 @@
-import { Controller } from "./Controller";
+import { Controller } from "../../Controller";
 import { Request, Response } from "express";
 
 export class TestController implements Controller {
-    public request(request: Request, response: Response): void {
+    public onRequest(request: Request, response: Response): void {
         if (request.session.views) {
             request.session.views++;
             response.setHeader("Content-Type", "text/html");

@@ -2,6 +2,9 @@ import { HttpsRequest } from "./HttpsRequest";
 import * as QueryString from "query-string";
 import { OAuth2Authentication } from "./OAuth2Authentication";
 
+/**
+ * Request to received a OAuth2 access token.
+ */
 export class OAuth2Authenticator extends HttpsRequest {
 
     private authentication: OAuth2Authentication;

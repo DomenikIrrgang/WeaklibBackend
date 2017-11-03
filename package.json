@@ -18,6 +18,7 @@
   "homepage": "https://github.com/DomenikIrrgang/WeaklibBackend#readme",
   "dependencies": {
     "@types/node": "^8.0.34",
+    "bcrypt": "^1.0.3",
     "body-parser": "^1.18.2",
     "connect-mongo": "^2.0.0",
     "cookie-parser": "^1.4.3",
@@ -33,6 +34,7 @@
     "typescript": "^2.5.3"
   },
   "devDependencies": {
+    "@types/bcrypt": "^1.0.0",
     "@types/body-parser": "^1.16.5",
     "@types/connect-mongo": "0.0.34",
     "@types/cookie-parser": "^1.4.1",

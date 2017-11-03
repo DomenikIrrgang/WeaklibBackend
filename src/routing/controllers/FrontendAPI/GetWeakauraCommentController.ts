@@ -1,8 +1,9 @@
-import { Controller } from "./Controller";
+import { Controller } from "../../Controller";
 import { Request, Response } from "express";
-import { DatabaseRequestScheduler } from "../database/DatabaseRequestScheduler";
-import { FindAll } from "../database/requests/FindAll";
-import { FindOne } from "../database/requests/FindOne";
+import { DatabaseRequestScheduler } from "../../../database/DatabaseRequestScheduler";
+import { FindAll } from "../../../database/requests/FindAll";
+import { FindOne } from "../../../database/requests/FindOne";
+import { config } from "../../../config/Config";
 
 interface Comment {
     text: string;
@@ -14,12 +15,12 @@ interface Comment {
 }
 
 export class GetWeakauraCommentController implements Controller {
-    public request(request: Request, response: Response): void {
+    public onRequest(request: Request, response: Response): void {
         let result: Comment[] = [];
         const database: DatabaseRequestScheduler = new DatabaseRequestScheduler(null, () => {
             response.send(JSON.stringify(result));
         });
-        database.scheduleRequest(new FindAll("weakauracomment", this.getQuery(request), {}, (comments: Comment[], error) => {
+        database.scheduleRequest(new FindAll(config.database.collections.weakauracomment, this.getQuery(request), {}, (comments: Comment[], error) => {
             result = comments;
             this.findUser(database, result);
         }));
@@ -28,7 +29,7 @@ export class GetWeakauraCommentController implements Controller {
 
     private findUser(database: DatabaseRequestScheduler, comments: Comment[]) {
         for (let comment of comments) {
-            database.scheduleRequest(new FindOne("user", { name: comment.user }, {}, (user) => {
+            database.scheduleRequest(new FindOne(config.database.collections.user, { name: comment.user }, {}, (user) => {
                 comment.user = {};
                 comment.user["name"] = user.name;
                 comment.user["profilePicture"] = user.profilePicture;

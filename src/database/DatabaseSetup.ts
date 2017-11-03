@@ -1,29 +1,62 @@
 import { DatabaseRequestScheduler } from "./DatabaseRequestScheduler";
 import { CreateCollection } from "./requests/CreateCollection";
 import { CreateIndex } from "./requests/CreateIndex";
-import { InsertOne } from "./requests/InsertOne";
 import { InsertMany } from "./requests/InsertMany";
 import { config } from "../config/Config";
 import { Weakaura } from "../database/models/Weakaura";
 import { User } from "../database/models/User";
 import { WeakauraCategory } from "../database/models/WeakauraCategory";
-import { WeakauraComment } from "../database/models/WeakauraComment";
-import { ObjectID } from "mongodb";
+import { DropDatabase } from "./requests/DropDatabase";
+import * as connectMongo from "connect-mongo";
+import * as session from "express-session";
+import { CreateUser } from "./requests/user/InsertUser";
+
+let MongoStore = connectMongo(session);
 
 export class DatabaseSetup {
-    public init(): void {
-        if (config.development) {
-            let database: DatabaseRequestScheduler = new DatabaseRequestScheduler();
-            this.initUser(database);
-            this.initWeakaura(database);
-            this.initCategories(database);
-            this.initWeakauraComment(database);
-            database.executeRequests();
+    private databaseRequestScheduler: DatabaseRequestScheduler;
+
+    public init(callback: () => void) {
+        if (config.database.initialized === false) {
+            config.database.initialized = true;
+            this.databaseRequestScheduler = new DatabaseRequestScheduler(null, () => {
+                callback();
+            });
+            if (!config.database.clear) {
+                this.initAll();
+            } else {
+                this.databaseRequestScheduler.scheduleRequest(new DropDatabase(() => {
+                    this.initAll();
+                    this.databaseRequestScheduler.executeRequests();
+                }));
+            }
+            this.databaseRequestScheduler.executeRequests();
+        } else {
+            callback();
         }
     }
 
-    public initUser(database: DatabaseRequestScheduler): void {
-        database.scheduleRequest(new CreateCollection("user", (result: any, error) => {
+    private initAll(): void {
+        this.initSession();
+        this.initUser();
+        this.initWeakaura();
+        this.initCategories();
+        this.initWeakauraComment();
+    }
+
+    private initNews(): void {
+        
+    }
+
+    private initSession(): void {
+        config.sessionconfig.options.store = new MongoStore({
+            url: config.database.getUrl(),
+            collection: config.database.collections.sessions,
+        });
+    }
+
+    private initUser(): void {
+        this.databaseRequestScheduler.scheduleRequest(new CreateCollection(config.database.collections.user, (result: any, error) => {
             if (!error) {
                 let user: User = {
                     name: "Suu",
@@ -33,16 +66,16 @@ export class DatabaseSetup {
                     profilePicture: "https://media.wago.io/screenshots/BJK1Krrq-/1505216864352-Hoez.png",
                     created: Date.now(),
                 };
-                database.scheduleRequest(new CreateIndex("user", { email: 1 }, { unique: true }));
-                database.scheduleRequest(new CreateIndex("user", { name: 1 }, { unique: true }));
-                database.scheduleRequest(new InsertOne("user", user));
-                database.executeRequests();
+                this.databaseRequestScheduler.scheduleRequest(new CreateIndex(config.database.collections.user, { email: 1 }, { unique: true }));
+                this.databaseRequestScheduler.scheduleRequest(new CreateIndex(config.database.collections.user, { name: 1 }, { unique: true }));
+                this.databaseRequestScheduler.scheduleRequest(new CreateUser(user));
+                this.databaseRequestScheduler.executeRequests();
             }
         }));
     }
 
-    public initWeakaura(database: DatabaseRequestScheduler): void {
-        database.scheduleRequest(new CreateCollection("weakaura", (result: any, error) => {
+    private initWeakaura(): void {
+        this.databaseRequestScheduler.scheduleRequest(new CreateCollection(config.database.collections.weakaura, (result: any, error) => {
             let weakaura: Weakaura[] = [
                 {
                     name: "Test Weakaura",
@@ -109,56 +142,43 @@ export class DatabaseSetup {
                     updated: Date.now(),
                 },
             ];
-            database.scheduleRequest(new InsertMany("weakaura", weakaura));
-            database.scheduleRequest(new CreateIndex("weakaura", { hash: 1 }, { unique: true }));
-            database.executeRequests();
+            this.databaseRequestScheduler.scheduleRequest(new InsertMany(config.database.collections.weakaura, weakaura));
+            this.databaseRequestScheduler.scheduleRequest(new CreateIndex(config.database.collections.weakaura, { hash: 1 }, { unique: true }));
+            this.databaseRequestScheduler.executeRequests();
         }));
     }
 
-    private initCategories(database: DatabaseRequestScheduler): void {
-        database.scheduleRequest(new CreateCollection("category", (result: any, error) => {
+    private initCategories(): void {
+        this.databaseRequestScheduler.scheduleRequest(new CreateCollection(config.database.collections.category, (result: any, error) => {
             if (!error) {
                 let categories: WeakauraCategory[] = [
+                    { name: "Mage" },
+                    { name: "Priest" },
+                    { name: "Warlock" },
+                    { name: "Rogue" },
+                    { name: "Druid" },
+                    { name: "Monk" },
+                    { name: "Demonhunter" },
+                    { name: "Shaman" },
+                    { name: "Hunter" },
                     { name: "Warrior" },
                     { name: "Paladin" },
                     { name: "Deathknight" },
-                    { name: "Druid" },
+                    { name: "PvE" },
+                    { name: "PvP" },
+                    { name: "Raid" },
+                    { name: "Dungeon" },
+                    { name: "ToS" },
                 ];
-                database.scheduleRequest(new InsertMany("category", categories));
-                database.scheduleRequest(new CreateIndex("category", { name: 1 }, { unique: true }));
-                database.executeRequests();
+                this.databaseRequestScheduler.scheduleRequest(new InsertMany(config.database.collections.category, categories));
+                this.databaseRequestScheduler.scheduleRequest(new CreateIndex(config.database.collections.category, { name: 1 }, { unique: true }));
+                this.databaseRequestScheduler.executeRequests();
             }
         }));
     }
 
-    private initWeakauraComment(database: DatabaseRequestScheduler): void {
-        database.scheduleRequest(new CreateCollection("weakauracomment", (result: any, error) => {
-            if (!error) {
-                let comment: WeakauraComment = {
-                    _id: new ObjectID(),
-                    version: "",
-                    user: "Suu",
-                    // tslint:disable-next-line:max-line-length
-                    text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-                    hash: "123xfaijkae",
-                    created: Date.now(),
-                    comments: [
-                        {
-                            _id: new ObjectID(),
-                            user: "Suu",
-                            version: "",
-                            // tslint:disable-next-line:max-line-length
-                            text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-                            hash: "123xfaijkae",
-                            created: Date.now(),
-                            comments: [],
-                        },
-                    ],
-                };
-                database.scheduleRequest(new InsertOne("weakauracomment", comment));
-                database.executeRequests();
-            }
-        }));
+    private initWeakauraComment(): void {
+        this.databaseRequestScheduler.scheduleRequest(new CreateCollection(config.database.collections.weakauracomment));
     }
 
 }

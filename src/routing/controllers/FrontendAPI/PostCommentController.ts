@@ -1,20 +1,21 @@
-import { Controller } from "./Controller";
+import { Controller } from "../../Controller";
 import { Request, Response } from "express";
-import { DatabaseRequestScheduler } from "../database/DatabaseRequestScheduler";
-import { InsertOne } from "../database/requests/InsertOne";
-import { UpdateOne } from "../database/requests/UpdateOne";
-import { FindOne } from "../database/requests/FindOne";
-import { WeakauraComment } from "../database/models/WeakauraComment";
+import { DatabaseRequestScheduler } from "../../../database/DatabaseRequestScheduler";
+import { InsertOne } from "../../../database/requests/InsertOne";
+import { UpdateOne } from "../../../database/requests/UpdateOne";
+import { FindOne } from "../../../database/requests/FindOne";
+import { WeakauraComment } from "../../../database/models/WeakauraComment";
 import { ObjectID } from "mongodb";
+import { config } from "../../../config/Config";
 
 export class PostCommentController implements Controller {
-    public request(request: Request, response: Response): void {
+    public onRequest(request: Request, response: Response): void {
         if (request.query.comment) {
             request.query.comment = request.query.comment.substring(0, 1000);
             const database: DatabaseRequestScheduler = new DatabaseRequestScheduler();
             if (request.query.hash && request.query.root && request.query.id) {
                 database.scheduleRequest(
-                    new FindOne("weakauracomment", { _id: new ObjectID(request.query.root) }, {}, (result: WeakauraComment, error) => {
+                    new FindOne(config.database.collections.weakauracomment, { _id: new ObjectID(request.query.root) }, {}, (result: WeakauraComment, error) => {
                         if (!error) {
                             let comment: WeakauraComment;
                             if (result._id.toHexString().toString() === request.query.id) {
@@ -23,7 +24,7 @@ export class PostCommentController implements Controller {
                                 comment = this.findComment(request.query.id, result.comments);
                             }
                             database.scheduleRequest(
-                                new FindOne("weakaura", { hash: request.query.hash }, {}, (weakaura) => {
+                                new FindOne(config.database.collections.weakaura, { hash: request.query.hash }, {}, (weakaura) => {
                                     comment.comments.push({
                                         _id: new ObjectID(),
                                         created: Date.now(),
@@ -34,9 +35,9 @@ export class PostCommentController implements Controller {
                                         version: weakaura.versions.reverse()[0].version,
                                     });
                                     database.scheduleRequest(
-                                        new UpdateOne("weakauracomment", { _id: new ObjectID(request.query.root) }, result,
+                                        new UpdateOne(config.database.collections.weakauracomment, { _id: new ObjectID(request.query.root) }, result,
                                             () => {
-                                                response.send("SUCCESS");
+                                                response.sendStatus(200);
                                             }));
                                     database.executeRequests();
                                 }));
@@ -49,7 +50,7 @@ export class PostCommentController implements Controller {
             } else {
                 if (request.query.hash) {
                     database.scheduleRequest(
-                        new FindOne("weakaura", { hash: request.query.hash }, {}, (weakaura) => {
+                        new FindOne(config.database.collections.weakaura, { hash: request.query.hash }, {}, (weakaura) => {
                             let comment: WeakauraComment = {
                                 _id: new ObjectID(),
                                 comments: [],
@@ -59,9 +60,9 @@ export class PostCommentController implements Controller {
                                 text: request.query.comment,
                                 user: request.session.user.name,
                             };
-                            database.executeSingleRequest(new InsertOne("weakauracomment", comment, (result: any, error) => {
+                            database.executeSingleRequest(new InsertOne(config.database.collections.weakauracomment, comment, (result: any, error) => {
                                 if (!error) {
-                                    response.send("SUCCESS");
+                                    response.send(200);
                                 }
                             }));
                         }));

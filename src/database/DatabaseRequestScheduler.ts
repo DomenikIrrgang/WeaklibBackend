@@ -38,6 +38,9 @@ export class DatabaseRequestScheduler implements DatabaseRequestObserver {
      */
     private connectCallback: () => void;
 
+    /**
+     * Url of the database to connect to.
+     */
     private databaseUrl: string = config.database.getUrl();
 
     /**

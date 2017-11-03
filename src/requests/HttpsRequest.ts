@@ -3,6 +3,9 @@ import { config } from "../config/Config";
 import { LogLevel } from "../logging/LogLevel";
 import { OutgoingHttpHeaders } from "http";
 
+/**
+ * Basic HTTPS Request with logging included.
+ */
 export class HttpsRequest {
 
     private type: string;

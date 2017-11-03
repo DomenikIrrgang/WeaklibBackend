@@ -1,18 +1,47 @@
-import { DatabaseConfig, databaseConfig } from "./DatabaseConfig";
-import { AppConfig, appConfig } from "./AppConfig";
-import { SessionConfig, sessionConfig } from "./SessionConfig";
-import { developmentEnvironment } from "./Globals";
+import { DatabaseConfig, devDatabaseConfig, productionDatabaseConfig, testDatabaseConfig } from "./DatabaseConfig";
+import { AppConfig, devAppConfig, productionAppConfig, testAppConfig } from "./AppConfig";
+import { SessionConfig, devSessionConfig, testSessionConfig, productionSessionConfig } from "./SessionConfig";
 
+/**
+ * General Configuration of the Backend.
+ */
 export class Config {
     public database: DatabaseConfig;
     public app: AppConfig;
-    public session: SessionConfig;
-    public development: boolean;
+    public sessionconfig: SessionConfig;
+    public environment: string;
 }
 
-export let config: Config = {
-    database: databaseConfig,
-    app: appConfig,
-    session: sessionConfig,
-    development: developmentEnvironment,
+let environment: string = "development";
+let configs: { [environment: string]: Config } = {};
+
+configs.test = {
+    database: testDatabaseConfig,
+    app: testAppConfig,
+    sessionconfig: testSessionConfig,
+    environment: "test",
 };
+
+configs.production = {
+    database: productionDatabaseConfig,
+    app: productionAppConfig,
+    sessionconfig: productionSessionConfig,
+    environment: "production",
+};
+
+configs.development = {
+    database: devDatabaseConfig,
+    app: devAppConfig,
+    sessionconfig: devSessionConfig,
+    environment: "devlelopment",
+};
+
+let config: Config = configs[environment];
+
+export let setConfig = (env: string) => {
+    if (configs[env]) {
+        config = configs[env];
+    }
+};
+
+export { config as config };
